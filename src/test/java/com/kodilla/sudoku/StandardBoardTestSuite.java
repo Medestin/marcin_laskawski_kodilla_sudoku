@@ -31,7 +31,5 @@ public class StandardBoardTestSuite {
 
         Assert.assertNotEquals(element, deepElement);
         Assert.assertEquals(element.getValue(), deepElement.getValue());
-
-
     }
 }

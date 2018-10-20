@@ -38,5 +38,4 @@ public class Row {
         });
         return new Row(deepList);
     }
-
 }

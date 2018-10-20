@@ -13,16 +13,8 @@ public final class StandardResolver implements Resolver {
         this.updater = new StandardUpdater(board);
     }
 
-    public boolean checkForBacktrack() {
-        if (backtrack != null) {
-            return true;
-        } else return false;
-    }
-
     public boolean hasWon() {
-        if (hasBlanks()) {
-            return false;
-        } else return true;
+        return !hasBlanks();
     }
 
     public void resolve() {
@@ -37,7 +29,6 @@ public final class StandardResolver implements Resolver {
             }
         }
     }
-
 
     private boolean hasBlanks() {
         for (Row row : board.getRows()) {
@@ -137,15 +128,12 @@ public final class StandardResolver implements Resolver {
             backGuesses = new HashSet<>();
             backGuesses.addAll(guessSet);
         }
-
         private Board getBoard() {
             return this.backBoard;
         }
-
         private Set<Guess> getGuesses() {
             return this.backGuesses;
         }
-
     }
 
     private final class Guess {

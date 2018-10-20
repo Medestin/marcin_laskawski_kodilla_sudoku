@@ -122,17 +122,11 @@ public class StandardResolverTestSuite {
         board.getElement(8,1).setValue(2);
         board.getElement(8,2).setValue(8);
 
-
         System.out.println(board);
         standardResolver.resolve();
         Assert.assertTrue(standardResolver.hasWon());
         System.out.println(board);
         System.out.println(board.getElement(1, 1).getPossibleValues());
-//
-//        Board deepBoard = board.deepCopy();
-//        standardResolver = new StandardResolver(deepBoard);
-//
-//        Assert.assertTrue(standardResolver.hasWon());
     }
 
 }
