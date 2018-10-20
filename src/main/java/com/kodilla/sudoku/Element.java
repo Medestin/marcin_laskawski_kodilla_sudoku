@@ -1,13 +1,11 @@
 package com.kodilla.sudoku;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
 public final class Element {
-    private final static int EMPTY = -1;
+    private final int EMPTY = -1;
     private int value;
     private final Set<Integer> possibleValues = new HashSet<>();
 
@@ -32,7 +30,7 @@ public final class Element {
     }
 
     public Set<Integer> getPossibleValues() {
-        return new HashSet<>(possibleValues);
+        return possibleValues;
     }
 
     public void removePossibleValue(int value){

@@ -1,4 +1,4 @@
 package com.kodilla.sudoku;
 
-public interface Board {
+public interface Sudoku {
 }
