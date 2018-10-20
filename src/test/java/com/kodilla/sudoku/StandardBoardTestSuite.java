@@ -15,7 +15,23 @@ public class StandardBoardTestSuite {
     public void testSetGetElement(){
         StandardBoard standardBoard = new StandardBoard();
 
-        standardBoard.setElementValue(0, 1, 5);
+        standardBoard.getElement(0, 1).setValue(5);
         Assert.assertEquals(5, standardBoard.getElement(0, 1).getValue());
+    }
+
+    @Test
+    public void testDeepCopy(){
+        Board board = new StandardBoard();
+        board.getElement(0, 0).setValue(5);
+
+        Board deepBoard = board.deepCopy();
+
+        Element element = board.getElement(0, 0);
+        Element deepElement = deepBoard.getElement(0, 0);
+
+        Assert.assertNotEquals(element, deepElement);
+        Assert.assertEquals(element.getValue(), deepElement.getValue());
+
+
     }
 }

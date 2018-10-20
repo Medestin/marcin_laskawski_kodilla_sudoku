@@ -4,28 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class StandardBoard implements Board {
-    private final List<Row> rows = new ArrayList<>();
+    private final List<Row> rows;
 
     public StandardBoard(){
+        this.rows = new ArrayList<>();
         for(int i = 0; i < 9; i++){
-            rows.add(new Row());
+            rows.add(new Row(9));
         }
     }
 
+    private StandardBoard(List<Row> rows){
+        this.rows = new ArrayList<>(rows);
+    }
+
+    @Override
     public List<Row> getRows() {
         return rows;
     }
 
+    @Override
     public Row getRow(int index){
         return rows.get(index);
     }
 
+    @Override
     public Element getElement(int rowIndex, int columnIndex){
         return getRow(rowIndex).getElement(columnIndex);
-    }
-
-    public void setElementValue(int rowIndex, int columnIndex, int value){
-        getElement(rowIndex, columnIndex).setValue(value);
     }
 
     @Override
@@ -35,13 +39,10 @@ public final class StandardBoard implements Board {
         return stringBuilder.toString();
     }
 
-    @Override
-    public StandardBoard deepCopy(){
-        StandardBoard standardBoard = new StandardBoard();
-        standardBoard.rows.clear();
-        for(Row r : this.rows){
-            standardBoard.rows.add(r.deepCopy());
-        }
-        return standardBoard;
+    public Board deepCopy(){
+        List<Row> deepRows = new ArrayList<>();
+        this.rows.forEach(n ->
+                deepRows.add(n.deepCopy()));
+        return new StandardBoard(deepRows);
     }
 }

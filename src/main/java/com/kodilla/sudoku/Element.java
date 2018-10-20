@@ -6,25 +6,21 @@ import java.util.stream.IntStream;
 
 public final class Element {
     private final int EMPTY = -1;
+    private final int rowLength;
     private int value;
     private final Set<Integer> possibleValues;
 
-    public Element(){
-        this.value = EMPTY;
-        this.possibleValues = new HashSet<>();
-        IntStream.range(1, 10)
-                .forEach(this.possibleValues::add);
-    }
-
     public Element(int rowLength){
         this.value = EMPTY;
+        this.rowLength = rowLength;
         this.possibleValues = new HashSet<>();
         IntStream.range(1, rowLength+1)
                 .forEach(this.possibleValues::add);
     }
 
-    private Element(int value, Set<Integer> possibleValues){
+    private Element(int rowLength, int value, Set<Integer> possibleValues){
         this.value = value;
+        this.rowLength = rowLength;
         this.possibleValues = new HashSet<>(possibleValues);
     }
 
@@ -40,12 +36,16 @@ public final class Element {
         return possibleValues;
     }
 
+    public void removePossibleValue(int value){
+        possibleValues.remove(value);
+    }
+
     @Override
     public String toString() {
         return this.value == EMPTY ? " " : String.valueOf(this.value);
     }
 
     public Element deepCopy(){
-        return new Element(this.value, this.possibleValues);
+        return new Element(this.rowLength, this.value, this.possibleValues);
     }
 }

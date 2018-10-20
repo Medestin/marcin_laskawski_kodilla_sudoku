@@ -3,31 +3,19 @@ package com.kodilla.sudoku;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StandardSudoku implements Sudoku {
-    private final StandardBoard board;
+public class StandardUpdater implements Updater {
+    private final Board board;
     private final int size;
 
-    public StandardSudoku(StandardBoard standardBoard) {
-        this.board = standardBoard;
+    public StandardUpdater(Board board) {
+        this.board = board;
         this.size = board.getRows().size();
     }
 
-    @Override
-    public int getSudokuSize(){
-        return size;
-    }
-
-    @Override
-    public void setElementValue(int rowIndex, int columnIndex, int value) {
-        board.setElementValue(rowIndex, columnIndex, value);
-    }
-
-    @Override
     public Element getElement(int rowIndex, int columnIndex){
         return board.getElement(rowIndex, columnIndex);
     }
 
-    @Override
     public void updatePossibleValues(){
         for(int i = 0; i < size; i ++){
             for(int j = 0; j < size; j++){
@@ -99,11 +87,6 @@ public class StandardSudoku implements Sudoku {
         } else {
             return 8;
         }
-    }
-
-    @Override
-    public StandardBoard getStandardBoard() {
-        return board;
     }
 
     @Override

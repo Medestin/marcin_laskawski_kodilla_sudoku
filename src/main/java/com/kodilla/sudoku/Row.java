@@ -3,18 +3,17 @@ package com.kodilla.sudoku;
 import java.util.*;
 
 public class Row {
-    private final List<Element> elementList = new ArrayList<>();
-
-    public Row() {
-        for (int i = 1; i < 10; i++) {
-            this.elementList.add(new Element());
-        }
-    }
+    private final List<Element> elementList;
 
     public Row(int rowLength) {
+        this.elementList = new ArrayList<>();
         for (int i = 1; i < rowLength + 1; i++) {
             this.elementList.add(new Element(rowLength));
         }
+    }
+
+    private Row(List<Element> elementList){
+        this.elementList = elementList;
     }
 
     public List<Element> getElementList() {
@@ -25,10 +24,6 @@ public class Row {
         return elementList.get(index);
     }
 
-    public void setElementValue(int index, int value) {
-        getElement(index).setValue(value);
-    }
-
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder().append("|");
@@ -37,13 +32,11 @@ public class Row {
     }
 
     public Row deepCopy(){
-        int length = this.elementList.size();
-        Row row = new Row();
-        row.getElementList().clear();
-        for(Element e : this.elementList){
-            row.getElementList().add(e.deepCopy());
-        }
-        return row;
+        List<Element> deepList = new ArrayList<>();
+        this.elementList.forEach(n ->{
+            deepList.add(n.deepCopy());
+        });
+        return new Row(deepList);
     }
 
 }
