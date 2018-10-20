@@ -7,19 +7,27 @@ public class StandardSudoku implements Sudoku {
     private final StandardBoard board;
     private final int size;
 
-    public StandardSudoku() {
-        this.board = new StandardBoard();
+    public StandardSudoku(StandardBoard standardBoard) {
+        this.board = standardBoard;
         this.size = board.getRows().size();
     }
 
+    @Override
+    public int getSudokuSize(){
+        return size;
+    }
+
+    @Override
     public void setElementValue(int rowIndex, int columnIndex, int value) {
         board.setElementValue(rowIndex, columnIndex, value);
     }
 
+    @Override
     public Element getElement(int rowIndex, int columnIndex){
         return board.getElement(rowIndex, columnIndex);
     }
 
+    @Override
     public void updatePossibleValues(){
         for(int i = 0; i < size; i ++){
             for(int j = 0; j < size; j++){
@@ -91,6 +99,11 @@ public class StandardSudoku implements Sudoku {
         } else {
             return 8;
         }
+    }
+
+    @Override
+    public StandardBoard getStandardBoard() {
+        return board;
     }
 
     @Override

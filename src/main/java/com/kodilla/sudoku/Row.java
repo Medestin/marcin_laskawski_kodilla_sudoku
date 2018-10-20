@@ -35,4 +35,15 @@ public class Row {
         elementList.forEach(n -> stringBuilder.append(n).append("|"));
         return stringBuilder.toString();
     }
+
+    public Row deepCopy(){
+        int length = this.elementList.size();
+        Row row = new Row();
+        row.getElementList().clear();
+        for(Element e : this.elementList){
+            row.getElementList().add(e.deepCopy());
+        }
+        return row;
+    }
+
 }

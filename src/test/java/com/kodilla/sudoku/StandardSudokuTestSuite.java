@@ -7,7 +7,8 @@ public class StandardSudokuTestSuite {
 
     @Test
     public void testUpdatePossibleValues(){
-        StandardSudoku standardSudoku = new StandardSudoku();
+        StandardBoard standardBoard = new StandardBoard();
+        StandardSudoku standardSudoku = new StandardSudoku(standardBoard);
         standardSudoku.setElementValue(0, 0, 5);
         standardSudoku.setElementValue(0, 1, 4);
         standardSudoku.setElementValue(0, 2, 3);

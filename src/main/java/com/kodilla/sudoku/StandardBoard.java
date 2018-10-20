@@ -5,7 +5,6 @@ import java.util.List;
 
 public final class StandardBoard implements Board {
     private final List<Row> rows = new ArrayList<>();
-    private boolean finished;
 
     public StandardBoard(){
         for(int i = 0; i < 9; i++){
@@ -34,5 +33,15 @@ public final class StandardBoard implements Board {
         StringBuilder stringBuilder = new StringBuilder();
         rows.forEach(n -> stringBuilder.append(n).append("\n"));
         return stringBuilder.toString();
+    }
+
+    @Override
+    public StandardBoard deepCopy(){
+        StandardBoard standardBoard = new StandardBoard();
+        standardBoard.rows.clear();
+        for(Row r : this.rows){
+            standardBoard.rows.add(r.deepCopy());
+        }
+        return standardBoard;
     }
 }
