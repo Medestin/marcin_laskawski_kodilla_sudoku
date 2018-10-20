@@ -6,42 +6,52 @@ public final class StandardResolver implements Resolver {
     private Updater updater;
     private Board board;
     private Set<Guess> alreadyGuessed = new HashSet<>();
-    private final Deque<BacktrackDTO> backtracks = new ArrayDeque<>();
+    private BacktrackDTO backtrack;
 
     public StandardResolver(Board board) {
         this.board = board;
         this.updater = new StandardUpdater(board);
     }
 
+    public boolean checkForBacktrack() {
+        if (backtrack != null) {
+            return true;
+        } else return false;
+    }
 
-    public boolean resolve(){
+    public boolean hasWon() {
+        if (hasBlanks()) {
+            return false;
+        } else return true;
+    }
+
+    public void resolve() {
         updater.updatePossibleValues();
 
-        if(hasWon()){
-            return true;
+        while (hasBlanks()) {
+            loopFill();
+            if (hasBlanks()) {
+                if (guessOneSpot()) {
+                    resolve();
+                }
+            }
         }
-        loopFill();
+    }
 
-        if(guessOneSpot()){
-            resolve();
-        } else if(loadBacktrack()){
-            resolve();
+
+    private boolean hasBlanks() {
+        for (Row row : board.getRows()) {
+            for (Element e : row.getElementList()) {
+                if (e.getValue() == -1) {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
-    private boolean hasWon(){
-        for (Row row : board.getRows()) {
-            for (Element e : row.getElementList()) {
-                if (e.getValue() == -1) {
-                   return false;
-                }
-            }
-        }
-        return true;
-    }
-
     private boolean guessOneSpot() {
+        updater.updatePossibleValues();
         int minOptions;
         int maxOptions = this.board.getRows().size();
 
@@ -50,8 +60,8 @@ public final class StandardResolver implements Resolver {
             for (int i = 0; i < maxOptions; i++) {
                 for (int j = 0; j < maxOptions; j++) {
                     currentElement = board.getRow(i).getElement(j);
-                    if(currentElement.getPossibleValues().size() == minOptions && currentElement.getValue() == -1){
-                        if(guessSingleElement(i, j)){
+                    if (currentElement.getPossibleValues().size() == minOptions && currentElement.getValue() == -1) {
+                        if (guessSingleElement(i, j)) {
                             return true;
                         }
                     }
@@ -61,26 +71,32 @@ public final class StandardResolver implements Resolver {
         return false;
     }
 
-    private boolean guessSingleElement(int row, int column){
+    private boolean guessSingleElement(int row, int column) {
         Element currentElement = this.board.getElement(row, column);
         List<Integer> currentPossibilities = new ArrayList<>(currentElement.getPossibleValues());
 
         Guess currentGuess;
-        for(int i = 0; i < currentPossibilities.size(); i++){
+        for (int i = 0; i < currentPossibilities.size(); i++) {
             currentGuess = new Guess(row, column, currentPossibilities.get(i));
-            if(!alreadyGuessed.contains(currentGuess)){
+            if (!alreadyGuessed.contains(currentGuess)) {
                 alreadyGuessed.add(currentGuess);
                 createBacktrack();
                 currentElement.setValue(currentPossibilities.get(i));
                 return true;
             }
         }
-        return false;
+        if (backtrack != null) {
+            loadBacktrack();
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
-    private void loopFill(){
+    private void loopFill() {
         this.updater.updatePossibleValues();
-        if(fillOneSpot()) {
+        if (fillOneSpot()) {
             loopFill();
         }
     }
@@ -98,34 +114,35 @@ public final class StandardResolver implements Resolver {
     }
 
     private void createBacktrack() {
-        backtracks.offerFirst(new BacktrackDTO(this.board, this.alreadyGuessed));
-    }
-
-    private boolean loadBacktrack() {
-        if (backtracks.peekFirst() != null) {
-            BacktrackDTO freshBacktrack = backtracks.pollFirst();
-            this.board = freshBacktrack.getBoard();
-            this.updater = new StandardUpdater(this.board);
-            this.alreadyGuessed = freshBacktrack.getGuesses();
-            return true;
+        if (backtrack == null) {
+            backtrack = new BacktrackDTO(this.board, this.alreadyGuessed);
         }
-        return false;
     }
 
-    private final class BacktrackDTO{
+    private void loadBacktrack() {
+        if (backtrack != null) {
+            this.board = backtrack.getBoard();
+            this.updater = new StandardUpdater(this.board);
+            this.alreadyGuessed = backtrack.getGuesses();
+            this.backtrack = null;
+        }
+    }
+
+    private final class BacktrackDTO {
         private final Board backBoard;
         private final Set<Guess> backGuesses;
 
-        private BacktrackDTO(Board board, Set<Guess> guessSet){
+        private BacktrackDTO(Board board, Set<Guess> guessSet) {
             this.backBoard = board.deepCopy();
-            backGuesses = new HashSet<>(guessSet);
+            backGuesses = new HashSet<>();
+            backGuesses.addAll(guessSet);
         }
 
-        private Board getBoard(){
+        private Board getBoard() {
             return this.backBoard;
         }
 
-        private Set<Guess> getGuesses(){
+        private Set<Guess> getGuesses() {
             return this.backGuesses;
         }
 
@@ -138,18 +155,6 @@ public final class StandardResolver implements Resolver {
             this.row = row;
             this.column = column;
             this.value = index;
-        }
-
-        private int getRow() {
-            return row;
-        }
-
-        private int getColumn() {
-            return column;
-        }
-
-        private int getValue() {
-            return value;
         }
 
         @Override
