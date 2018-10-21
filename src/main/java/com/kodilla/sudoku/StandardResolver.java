@@ -6,7 +6,7 @@ public final class StandardResolver implements Resolver {
     private Updater updater;
     private Board board;
     private Set<Guess> alreadyGuessed = new HashSet<>();
-    private BacktrackDTO backtrack;
+    private Deque<BacktrackDTO> backtracks = new ArrayDeque<>();
 
     public StandardResolver(Board board) {
         this.board = board;
@@ -18,14 +18,17 @@ public final class StandardResolver implements Resolver {
     }
 
     public void resolve() {
-        updater.updatePossibleValues();
 
-        while (hasBlanks()) {
-            loopFill();
-            if (hasBlanks()) {
-                if (guessOneSpot()) {
-                    resolve();
-                }
+        loopFill();
+
+        if(hasBlanks()){
+            Guess guess = findGuessSpot();
+            if(guess != null){
+                guess(guess);
+                resolve();
+            } else if (!backtracks.isEmpty()){
+                loadBacktrack();
+                resolve();
             }
         }
     }
@@ -41,48 +44,33 @@ public final class StandardResolver implements Resolver {
         return false;
     }
 
-    private boolean guessOneSpot() {
-        updater.updatePossibleValues();
-        int minOptions;
-        int maxOptions = this.board.getRows().size();
+    private void guess(Guess guess){
+        alreadyGuessed.add(guess);
+        createBacktrack();
+        board.getElement(guess.getRow(), guess.getColumn()).setValue(guess.getValue());
+    }
 
+    private Guess findGuessSpot() {
         Element currentElement;
-        for (minOptions = 2; minOptions <= maxOptions; minOptions++) {
-            for (int i = 0; i < maxOptions; i++) {
-                for (int j = 0; j < maxOptions; j++) {
-                    currentElement = board.getRow(i).getElement(j);
-                    if (currentElement.getPossibleValues().size() == minOptions && currentElement.getValue() == -1) {
-                        if (guessSingleElement(i, j)) {
-                            return true;
+        Guess currentGuess;
+        List<Integer> currentList;
+        for (int numberOfChoices = 2; numberOfChoices <= board.getRows().size(); numberOfChoices++) {
+            for (int i = 0; i < board.getRows().size(); i++) {
+                for (int j = 0; j < board.getRows().size(); j++) {
+                    currentElement = board.getElement(i, j);
+                    if (currentElement.getValue() == -1 && currentElement.getPossibleValues().size() == numberOfChoices) {
+                        currentList = new ArrayList<>(currentElement.getPossibleValues());
+                        for (int k = 0; k < currentList.size(); k++) {
+                            currentGuess = new Guess(i, j, currentList.get(k));
+                            if (!alreadyGuessed.contains(currentGuess)) {
+                                return currentGuess;
+                            }
                         }
                     }
                 }
             }
         }
-        return false;
-    }
-
-    private boolean guessSingleElement(int row, int column) {
-        Element currentElement = this.board.getElement(row, column);
-        List<Integer> currentPossibilities = new ArrayList<>(currentElement.getPossibleValues());
-
-        Guess currentGuess;
-        for (int i = 0; i < currentPossibilities.size(); i++) {
-            currentGuess = new Guess(row, column, currentPossibilities.get(i));
-            if (!alreadyGuessed.contains(currentGuess)) {
-                alreadyGuessed.add(currentGuess);
-                createBacktrack();
-                currentElement.setValue(currentPossibilities.get(i));
-                return true;
-            }
-        }
-        if (backtrack != null) {
-            loadBacktrack();
-            return true;
-        } else {
-            return false;
-        }
-
+        return null;
     }
 
     private void loopFill() {
@@ -105,17 +93,15 @@ public final class StandardResolver implements Resolver {
     }
 
     private void createBacktrack() {
-        if (backtrack == null) {
-            backtrack = new BacktrackDTO(this.board, this.alreadyGuessed);
-        }
+        backtracks.offer(new BacktrackDTO(this.board, this.alreadyGuessed));
     }
 
     private void loadBacktrack() {
-        if (backtrack != null) {
+        if (backtracks != null) {
+            BacktrackDTO backtrack = backtracks.pollLast();
             this.board = backtrack.getBoard();
             this.updater = new StandardUpdater(this.board);
             this.alreadyGuessed = backtrack.getGuesses();
-            this.backtrack = null;
         }
     }
 
@@ -128,9 +114,11 @@ public final class StandardResolver implements Resolver {
             backGuesses = new HashSet<>();
             backGuesses.addAll(guessSet);
         }
+
         private Board getBoard() {
             return this.backBoard;
         }
+
         private Set<Guess> getGuesses() {
             return this.backGuesses;
         }
@@ -139,10 +127,22 @@ public final class StandardResolver implements Resolver {
     private final class Guess {
         private final int row, column, value;
 
-        private Guess(int row, int column, int index) {
+        private Guess(int row, int column, int value) {
             this.row = row;
             this.column = column;
-            this.value = index;
+            this.value = value;
+        }
+
+        private int getRow() {
+            return row;
+        }
+
+        private int getColumn() {
+            return column;
+        }
+
+        private int getValue() {
+            return value;
         }
 
         @Override

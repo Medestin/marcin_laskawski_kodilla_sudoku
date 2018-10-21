@@ -16,11 +16,6 @@ public class StandardUpdater implements Updater {
         return board.getElement(rowIndex, columnIndex);
     }
 
-    @Override
-    public int getSize() {
-        return size;
-    }
-
     public void updatePossibleValues(){
         for(int i = 0; i < size; i ++){
             for(int j = 0; j < size; j++){

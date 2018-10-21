@@ -83,12 +83,9 @@ public class StandardResolverTestSuite {
         Board board = new StandardBoard();
         StandardResolver standardResolver = new StandardResolver(board);
 
-        board.getElement(0,0).setValue(1);
         board.getElement(0,6).setValue(6);
         board.getElement(0,7).setValue(8);
 
-        board.getElement(1,7).setValue(2);
-        board.getElement(1,8).setValue(1);
         board.getElement(1,4).setValue(7);
         board.getElement(1,5).setValue(3);
         board.getElement(1,8).setValue(9);
@@ -126,7 +123,6 @@ public class StandardResolverTestSuite {
         standardResolver.resolve();
         Assert.assertTrue(standardResolver.hasWon());
         System.out.println(board);
-        System.out.println(board.getElement(1, 1).getPossibleValues());
     }
 
 }
