@@ -5,11 +5,7 @@ import org.junit.Test;
 
 public class StandardResolverTestSuite {
 
-    @Test
-    public void testEasySudoku(){
-        Board board = new StandardBoard();
-        StandardResolver standardResolver = new StandardResolver(board);
-
+    private void fillBoardEasy(Board board){
         board.getElement(0, 0).setValue(6);
         board.getElement(0, 1).setValue(1);
 
@@ -61,28 +57,8 @@ public class StandardResolverTestSuite {
         board.getElement(8, 7).setValue(5);
         board.getElement(8, 8).setValue(9);
 
-        System.out.println(board);
-        standardResolver.resolve();
-        Assert.assertTrue(standardResolver.hasWon());
-        System.out.println(board);
     }
-
-    @Test
-    public void testEmptySudoku(){
-        Board board = new StandardBoard();
-        StandardResolver standardResolver = new StandardResolver(board);
-
-        System.out.println(board);
-        standardResolver.resolve();
-        Assert.assertTrue(standardResolver.hasWon());
-        System.out.println(board);
-    }
-
-    @Test
-    public void testRandomSudoku(){
-        Board board = new StandardBoard();
-        StandardResolver standardResolver = new StandardResolver(board);
-
+    private void fillBoardRandom(Board board){
         board.getElement(0,6).setValue(6);
         board.getElement(0,7).setValue(8);
 
@@ -118,6 +94,37 @@ public class StandardResolverTestSuite {
 
         board.getElement(8,1).setValue(2);
         board.getElement(8,2).setValue(8);
+
+    }
+
+    @Test
+    public void testEasySudoku(){
+        Board board = new StandardBoard();
+        fillBoardEasy(board);
+        StandardResolver standardResolver = new StandardResolver(board);
+
+        System.out.println(board);
+        standardResolver.resolve();
+        Assert.assertTrue(standardResolver.hasWon());
+        System.out.println(board);
+    }
+
+    @Test
+    public void testEmptySudoku(){
+        Board board = new StandardBoard();
+        StandardResolver standardResolver = new StandardResolver(board);
+
+        System.out.println(board);
+        standardResolver.resolve();
+        Assert.assertTrue(standardResolver.hasWon());
+        System.out.println(board);
+    }
+
+    @Test
+    public void testRandomSudoku(){
+        Board board = new StandardBoard();
+        StandardResolver standardResolver = new StandardResolver(board);
+        fillBoardRandom(board);
 
         System.out.println(board);
         standardResolver.resolve();

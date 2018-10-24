@@ -18,7 +18,6 @@ public final class StandardResolver implements Resolver {
     }
 
     public void resolve() {
-
         loopFill();
 
         if(hasBlanks()){
@@ -60,8 +59,8 @@ public final class StandardResolver implements Resolver {
                     currentElement = board.getElement(i, j);
                     if (currentElement.getValue() == -1 && currentElement.getPossibleValues().size() == numberOfChoices) {
                         currentList = new ArrayList<>(currentElement.getPossibleValues());
-                        for (int k = 0; k < currentList.size(); k++) {
-                            currentGuess = new Guess(i, j, currentList.get(k));
+                        for (Integer guessValue : currentList) {
+                            currentGuess = new Guess(i, j, guessValue);
                             if (!alreadyGuessed.contains(currentGuess)) {
                                 return currentGuess;
                             }
@@ -97,7 +96,7 @@ public final class StandardResolver implements Resolver {
     }
 
     private void loadBacktrack() {
-        if (backtracks != null) {
+        if (!backtracks.isEmpty()) {
             BacktrackDTO backtrack = backtracks.pollLast();
             this.board = backtrack.getBoard();
             this.updater = new StandardUpdater(this.board);
@@ -111,8 +110,7 @@ public final class StandardResolver implements Resolver {
 
         private BacktrackDTO(Board board, Set<Guess> guessSet) {
             this.backBoard = board.deepCopy();
-            backGuesses = new HashSet<>();
-            backGuesses.addAll(guessSet);
+            backGuesses = new HashSet<>(guessSet);
         }
 
         private Board getBoard() {
