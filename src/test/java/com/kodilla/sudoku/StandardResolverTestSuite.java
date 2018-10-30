@@ -129,6 +129,7 @@ public class StandardResolverTestSuite {
         System.out.println(board);
         standardResolver.resolve();
         Assert.assertTrue(standardResolver.hasWon());
+        System.out.println(board.getElement(3, 4).getValue());
         System.out.println(board);
     }
 

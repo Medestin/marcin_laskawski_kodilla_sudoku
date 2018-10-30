@@ -18,15 +18,19 @@ public final class StandardResolver implements Resolver {
     }
 
     public void resolve() {
-        loopFill();
 
-        if(hasBlanks()){
+
+        while(hasBlanks()){
+            loopFill();
+            updater.updatePossibleValues();
             Guess guess = findGuessSpot();
             if(guess != null){
                 guess(guess);
+                updater.updatePossibleValues();
                 resolve();
             } else if (!backtracks.isEmpty()){
                 loadBacktrack();
+                updater.updatePossibleValues();
                 resolve();
             }
         }
@@ -44,8 +48,7 @@ public final class StandardResolver implements Resolver {
     }
 
     private void guess(Guess guess){
-        alreadyGuessed.add(guess);
-        createBacktrack();
+        createBacktrack(guess);
         board.getElement(guess.getRow(), guess.getColumn()).setValue(guess.getValue());
     }
 
@@ -91,8 +94,8 @@ public final class StandardResolver implements Resolver {
         return false;
     }
 
-    private void createBacktrack() {
-        backtracks.offer(new BacktrackDTO(this.board, this.alreadyGuessed));
+    private void createBacktrack(Guess guess) {
+        backtracks.offer(new BacktrackDTO(this.board, this.alreadyGuessed, guess));
     }
 
     private void loadBacktrack() {
@@ -101,16 +104,23 @@ public final class StandardResolver implements Resolver {
             this.board = backtrack.getBoard();
             this.updater = new StandardUpdater(this.board);
             this.alreadyGuessed = backtrack.getGuesses();
+
+            Guess guess = backtrack.getCurrentGuess();
+            this.board.getElement(guess.getRow(), guess.getColumn()).removePossibleValue(guess.getValue());
+            this.alreadyGuessed.add(guess);
+            updater.updatePossibleValues();
         }
     }
 
     private final class BacktrackDTO {
         private final Board backBoard;
         private final Set<Guess> backGuesses;
+        private final Guess currentGuess;
 
-        private BacktrackDTO(Board board, Set<Guess> guessSet) {
+        private BacktrackDTO(Board board, Set<Guess> guessSet, Guess guess) {
             this.backBoard = board.deepCopy();
-            backGuesses = new HashSet<>(guessSet);
+            this.backGuesses = new HashSet<>(guessSet);
+            this.currentGuess = guess;
         }
 
         private Board getBoard() {
@@ -119,6 +129,10 @@ public final class StandardResolver implements Resolver {
 
         private Set<Guess> getGuesses() {
             return this.backGuesses;
+        }
+
+        private Guess getCurrentGuess(){
+            return this.currentGuess;
         }
     }
 
