@@ -93,6 +93,7 @@ public final class StandardResolver implements Resolver {
             this.alreadyGuessed = backtrack.getAlreadyGuessed();
             this.alreadyGuessed.add(backtrack.getGuess());
             this.updater = new StandardUpdater(this.board);
+            this.board.getElement(backtrack.getGuess().getRowIndex(), backtrack.getGuess().getColIndex()).removePossibleValue(backtrack.getGuess().getValue());
             updater.updatePossibleValues();
         }
     }
