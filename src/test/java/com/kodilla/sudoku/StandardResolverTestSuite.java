@@ -59,6 +59,8 @@ public class StandardResolverTestSuite {
 
     }
     private void fillBoardRandom(Board board){
+        board.getElement(0,0).setValue(1);
+        board.getElement(0,1).setValue(7);
         board.getElement(0,6).setValue(6);
         board.getElement(0,7).setValue(8);
 
@@ -96,6 +98,7 @@ public class StandardResolverTestSuite {
         board.getElement(8,2).setValue(8);
 
     }
+
 
     @Test
     public void testEasySudoku(){
